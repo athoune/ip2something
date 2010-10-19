@@ -3,10 +3,15 @@ import cStringIO
 import socket
 import cPickle as pickle
 import anydbm
+import os.path
 
 class Array(object):
 	def __init__(self, name):
 		self.name = name
+		self._keys()
+	def _keys(self):
+		self.length = os.path.getsize('%s.keys' % self.name) / 4
+		self.keys = open('%s.keys' % self.name, 'r')
 	def parse(self, csv):
 		keys = open('%s.keys' % self.name, 'w')
 		dbm = anydbm.open('%s.dbm' % self.name, 'c')
@@ -20,14 +25,29 @@ class Array(object):
 			keys.write(key)
 			dbm[key] = line
 		keys.close()
-		dbm.close
+		dbm.close()
+		self._keys()
+	def __len__(self):
+		return self.length
+	def __getitem__(self, poz):
+		self.keys.seek(poz * 4)
+		return self.keys.read(4)
 	def search(self, ip):
 		k = socket.inet_aton(ip)
-		keys = open('%s.keys' % self.name, 'r')
+		cpt = 0
+		high = self.length
+		low = 0
 		while True:
-			bloc = keys.read(4)
-			if bloc == '' or k < bloc:
-				return socket.inet_ntoa(bloc)
+			cpt += 1
+			pif = (high+low) / 2
+			if self[pif] == k:
+				return socket.inet_ntoa(self[pif])
+			if pif > 1 and self[pif-1] < k and self[pif] > k:
+				return socket.inet_ntoa(self[pif])
+			if self[pif] > k :
+				high = pif
+			else:
+				low = pif
 
 class Index(object):
 	def __init__(self, path):
@@ -93,9 +113,13 @@ class Index(object):
 if __name__ == '__main__':
 	a = Array('ip')
 	#a.parse('ip_group_country.csv')
-	for b in range(100):
-		a.search('213.41.120.195')
-	print "hop"
+	#print len(a)
+	#print socket.inet_ntoa(a[1800])
+	for b in range(1):
+		for ip in ['17.149.160.31', '213.41.120.195', '184.73.76.248', '88.191.52.43']:
+			print "%s is in block " % ip, 
+			bloc = a.search(ip)
+			print bloc
 """
 	idx = Index('ip')
 	idx.parse('ip_group_country.csv')
