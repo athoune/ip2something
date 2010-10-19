@@ -4,28 +4,31 @@ import socket
 import cPickle as pickle
 import dbm
 import os.path
+import csv
 
 class Array(object):
-	def __init__(self, name):
+	def __init__(self, name, src):
 		self.name = name
+		self.src = src
 		self._keys()
 	def _keys(self):
 		self.length = os.path.getsize('%s.keys' % self.name) / 4
 		self.keys = open('%s.keys' % self.name, 'r')
 		if os.path.isfile('%s.db' % self.name):
 			self.dbm = dbm.open(self.name, 'r')
-	def parse(self, csv):
+		else:
+			self.parse()
+	def parse(self):
 		keys = open('%s.keys' % self.name, 'w')
 		db = dbm.open(self.name, 'c')
-		prems = True
-		for line in open(csv):
-			if prems :
-				prems = False
-				continue
-			datas = line.split(';')
-			key = struct.pack('!L', long(datas[0][1:-1]))
+		cpt = 0
+		for line in csv.reader(open(self.src, 'rb'), delimiter=';', quotechar='"'):
+			cpt += 1
+			if cpt == 1 : continue
+			key = struct.pack('!L', long(line[0]))
 			keys.write(key)
-			db[key] = line[:-1]
+			db[key] = '|'.join(line[1:])
+		print "indexing %i lines" % cpt
 		keys.close()
 		db.close()
 		self._keys()
@@ -111,18 +114,9 @@ class Index(object):
 			cpt += 1
 
 if __name__ == '__main__':
-	a = Array('ip')
-	#a.parse('ip_group_country.csv')
-	#print len(a)
-	#print socket.inet_ntoa(a[1800])
-	for b in range(10000):
+	a = Array('ip', 'ip_group_country.csv')
+	for b in range(1):
 		for ip in ['17.149.160.31', '213.41.120.195', '184.73.76.248', '88.191.52.43']:
-			#print "%s is in block " % ip, 
+			print "%s is in block " % ip, 
 			bloc = a.search(ip)
-			#print bloc
-"""
-	idx = Index('ip')
-	idx.parse('ip_group_country.csv')
-	for a in range(1):
-		idx.search('213.41.120.195')
-"""
+			print bloc
