@@ -55,8 +55,8 @@ class Index(object):
 
 if __name__ == '__main__':
 	a = Index('ip', 'ip_group_country.csv')
-	for b in range(10000):
+	for b in range(1):
 		for ip in ['17.149.160.31', '213.41.120.195', '184.73.76.248', '88.191.52.43']:
-			#print "%s is in block " % ip, 
+			print "%s is in block " % ip, 
 			bloc = a.search(ip)
-			#print bloc
+			print bloc
