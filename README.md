@@ -2,7 +2,7 @@ IP to something
 ===============
 
 A simple python API to wrap [IPinfoDB data](http://ipinfodb.com/ip_database.php). It's just python, no mysql here.
-On a core 2 duo mac, one query take 5ms.
+On a core 2 duo mac, one query take 0.15ms.
 
 Using it
 --------
