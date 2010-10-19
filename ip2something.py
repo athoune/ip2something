@@ -2,6 +2,32 @@ import struct
 import cStringIO
 import socket
 import cPickle as pickle
+import anydbm
+
+class Array(object):
+	def __init__(self, name):
+		self.name = name
+	def parse(self, csv):
+		keys = open('%s.keys' % self.name, 'w')
+		dbm = anydbm.open('%s.dbm' % self.name, 'c')
+		prems = True
+		for line in open(csv):
+			if prems :
+				prems = False
+				continue
+			datas = line.split(';')
+			key = struct.pack('!L', long(datas[0][1:-1]))
+			keys.write(key)
+			dbm[key] = line
+		keys.close()
+		dbm.close
+	def search(self, ip):
+		k = socket.inet_aton(ip)
+		keys = open('%s.keys' % self.name, 'r')
+		while True:
+			bloc = keys.read(4)
+			if bloc == '' or k < bloc:
+				return socket.inet_ntoa(bloc)
 
 class Index(object):
 	def __init__(self, path):
@@ -47,7 +73,6 @@ class Index(object):
 		f.seek(carte)
 		cpt = 0
 		while True:
-			cpt += 1
 			k = f.read(4)
 			if k == "" or None: break
 			if k > key:
@@ -59,12 +84,21 @@ class Index(object):
 				while True:
 					kk = f.read(4)
 					if kk > key:
-						#print struct.unpack('!L', kk)[0]
+						print cpt, cc, struct.unpack('!L', kk)[0], (cpt-1) * self.step + cc
 						break
+					cc += 1
 				break
+			cpt += 1
 
 if __name__ == '__main__':
+	a = Array('ip')
+	#a.parse('ip_group_country.csv')
+	for b in range(100):
+		a.search('213.41.120.195')
+	print "hop"
+"""
 	idx = Index('ip')
 	idx.parse('ip_group_country.csv')
-	for a in range(10):
+	for a in range(1):
 		idx.search('213.41.120.195')
+"""
