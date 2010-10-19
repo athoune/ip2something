@@ -2,7 +2,7 @@ import struct
 import cStringIO
 import socket
 import cPickle as pickle
-import anydbm
+import dbm
 import os.path
 
 class Array(object):
@@ -12,9 +12,11 @@ class Array(object):
 	def _keys(self):
 		self.length = os.path.getsize('%s.keys' % self.name) / 4
 		self.keys = open('%s.keys' % self.name, 'r')
+		if os.path.isfile('%s.db' % self.name):
+			self.dbm = dbm.open(self.name, 'r')
 	def parse(self, csv):
 		keys = open('%s.keys' % self.name, 'w')
-		dbm = anydbm.open('%s.dbm' % self.name, 'c')
+		db = dbm.open(self.name, 'c')
 		prems = True
 		for line in open(csv):
 			if prems :
@@ -23,9 +25,9 @@ class Array(object):
 			datas = line.split(';')
 			key = struct.pack('!L', long(datas[0][1:-1]))
 			keys.write(key)
-			dbm[key] = line
+			db[key] = line[:-1]
 		keys.close()
-		dbm.close()
+		db.close()
 		self._keys()
 	def __len__(self):
 		return self.length
@@ -40,10 +42,8 @@ class Array(object):
 		while True:
 			cpt += 1
 			pif = (high+low) / 2
-			if self[pif] == k:
-				return socket.inet_ntoa(self[pif])
-			if pif > 1 and self[pif-1] < k and self[pif] > k:
-				return socket.inet_ntoa(self[pif])
+			if self[pif] == k or (pif > 1 and self[pif-1] < k and self[pif] > k):
+				return socket.inet_ntoa(self[pif-1]), self.dbm[self[pif-1]]
 			if self[pif] > k :
 				high = pif
 			else:
@@ -115,11 +115,11 @@ if __name__ == '__main__':
 	#a.parse('ip_group_country.csv')
 	#print len(a)
 	#print socket.inet_ntoa(a[1800])
-	for b in range(1):
+	for b in range(10000):
 		for ip in ['17.149.160.31', '213.41.120.195', '184.73.76.248', '88.191.52.43']:
-			print "%s is in block " % ip, 
+			#print "%s is in block " % ip, 
 			bloc = a.search(ip)
-			print bloc
+			#print bloc
 """
 	idx = Index('ip')
 	idx.parse('ip_group_country.csv')
