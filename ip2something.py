@@ -8,6 +8,11 @@ import os
 import os.path
 import csv
 
+def float_or_none(f):
+	if f in ['', None]:
+		return None
+	return float(f)
+
 class Index(object):
 	def __init__(self, src, cache = '~/.ip2something'):
 		self.folder = os.path.expanduser(cache)
@@ -55,8 +60,8 @@ class Index(object):
 				'region_name'  : datas[3],
 				'city'         : datas[4],
 				'zipcode'      : datas[5],
-				'latitude'     : datas[6],
-				'longitude'    : datas[7],
+				'latitude'     : float_or_none(datas[6]),
+				'longitude'    : float_or_none(datas[7]),
 				'metrocode'    : datas[8]
 			}
 		return len(datas), datas
