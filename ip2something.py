@@ -34,7 +34,7 @@ class Index(object):
 		datas.close()
 	def __len__(self):
 		return self.length
-	def __getitem__(self, poz):
+	def getKey(self, poz):
 		self.keys.seek(poz * 10)
 		return self.keys.read(4)
 	def getData(self, poz):
@@ -50,9 +50,9 @@ class Index(object):
 		while True:
 			cpt += 1
 			pif = (high+low) / 2
-			if self[pif] == k or (pif > 1 and self[pif-1] < k and self[pif] > k):
-				return socket.inet_ntoa(self[pif-1]), self.getData(pif-1)
-			if self[pif] > k :
+			if self.getKey(pif) == k or (pif > 1 and self.getKey(pif-1) < k and self.getKey(pif) > k):
+				return socket.inet_ntoa(self.getKey(pif-1)), self.getData(pif-1)
+			if self.getKey(pif) > k :
 				high = pif
 			else:
 				low = pif
