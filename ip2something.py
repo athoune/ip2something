@@ -46,6 +46,20 @@ class Index(object):
 		poz, size = struct.unpack('!LH', self.keys.read(6))
 		self.datas.seek(poz)
 		return self.datas.read(size)
+	def toDict(self, datas):
+		if len(datas) == 9:
+			return {
+				'country_code' : datas[0],
+				'country_name' : datas[1],
+				'region_code'  : datas[2],
+				'region_name'  : datas[3],
+				'city'         : datas[4],
+				'zipcode'      : datas[5],
+				'latitude'     : datas[6],
+				'longitude'    : datas[7],
+				'metrocode'    : datas[8]
+			}
+		return len(datas), datas
 	def search(self, ip):
 		k = socket.inet_aton(ip)
 		cpt = 0
@@ -55,7 +69,7 @@ class Index(object):
 			cpt += 1
 			pif = (high+low) / 2
 			if self.getKey(pif) == k or (pif > 1 and self.getKey(pif-1) < k and self.getKey(pif) > k):
-				return self.getData(pif-1).split('|') #socket.inet_ntoa(self.getKey(pif-1))
+				return self.toDict(self.getData(pif-1).split('|')) #socket.inet_ntoa(self.getKey(pif-1))
 			if self.getKey(pif) > k :
 				high = pif
 			else:
