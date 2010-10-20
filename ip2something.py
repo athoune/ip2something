@@ -1,20 +1,24 @@
 import struct
 import socket
+import os
 import os.path
 import csv
 
 class Index(object):
-	def __init__(self, name, src):
-		self.name = name
+	def __init__(self, src, cache = '~/.ip2something'):
+		self.folder = os.path.expanduser(cache)
 		self.src = src
-		if not os.path.isfile('%s.data' % name):
+		data = os.path.join(self.folder, 'ip.data')
+		if not os.path.isfile(data):
 			self.parse()
-		self.length = os.path.getsize('%s.keys' % name) / 10
-		self.keys = open('%s.keys' % name, 'r')
-		self.datas = open('%s.data' % name, 'r')
+		key = os.path.join(self.folder, 'ip.keys')
+		self.length = os.path.getsize(key) / 10
+		self.keys = open(key, 'r')
+		self.datas = open(data, 'r')
 	def parse(self):
-		keys = open('%s.keys' % self.name, 'w')
-		datas = open('%s.data' % self.name, 'w')
+		if not os.path.exists(self.folder) : os.makedirs(self.folder)
+		keys = open(os.path.join(self.folder, 'ip.keys'), 'w')
+		datas = open(os.path.join(self.folder, 'ip.data'), 'w')
 		cpt = 0
 		for line in csv.reader(open(self.src, 'rb'), delimiter=';', quotechar='"'):
 			cpt += 1
@@ -54,7 +58,7 @@ class Index(object):
 				low = pif
 
 if __name__ == '__main__':
-	a = Index('ip', 'ip_group_country.csv')
+	a = Index('ip_group_city.csv')
 	for b in range(1):
 		for ip in ['17.149.160.31', '213.41.120.195', '184.73.76.248', '88.191.52.43']:
 			print "%s is in block " % ip, 
