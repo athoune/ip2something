@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+
+__author__ = "Mathieu Lecarme <mathieu@garambrogne.net>"
+
 import struct
 import socket
 import os
