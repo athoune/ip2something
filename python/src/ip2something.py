@@ -13,36 +13,35 @@ def float_or_none(f):
 		return None
 	return float(f)
 
+def parse_csv(src, db = '~/.ip2something', verbose = False):
+	folder = os.path.expanduser(db)
+	if not os.path.exists(folder) : os.makedirs(folder)
+	keys = open(os.path.join(folder, 'ip.keys'), 'w')
+	datas = open(os.path.join(folder, 'ip.data'), 'w')
+	cpt = 0
+	for line in csv.reader(open(src, 'rb'), delimiter=';', quotechar='"'):
+		cpt += 1
+		if cpt == 1 : continue
+		key = struct.pack('!L', long(line[0]))
+		keys.write(key)
+		data = '|'.join(line[1:])
+		keys.write(struct.pack('!L', long(datas.tell())))
+		keys.write(struct.pack('!H', len(data)))
+		datas.write(data)
+		if verbose and cpt % 25000 == 0:
+			print "#", cpt
+	print "indexing %i lines" % cpt
+	keys.close()
+	datas.close()
+
 class Index(object):
-	def __init__(self, src, cache = '~/.ip2something'):
+	def __init__(self, cache = '~/.ip2something'):
 		self.folder = os.path.expanduser(cache)
-		self.src = src
 		data = os.path.join(self.folder, 'ip.data')
-		if not os.path.isfile(data):
-			self.parse()
 		key = os.path.join(self.folder, 'ip.keys')
 		self.length = os.path.getsize(key) / 10
 		self.keys = open(key, 'r')
 		self.datas = open(data, 'r')
-	def parse(self, verbose=False):
-		if not os.path.exists(self.folder) : os.makedirs(self.folder)
-		keys = open(os.path.join(self.folder, 'ip.keys'), 'w')
-		datas = open(os.path.join(self.folder, 'ip.data'), 'w')
-		cpt = 0
-		for line in csv.reader(open(self.src, 'rb'), delimiter=';', quotechar='"'):
-			cpt += 1
-			if cpt == 1 : continue
-			key = struct.pack('!L', long(line[0]))
-			keys.write(key)
-			data = '|'.join(line[1:])
-			keys.write(struct.pack('!L', long(datas.tell())))
-			keys.write(struct.pack('!H', len(data)))
-			datas.write(data)
-			if verbose and cpt % 25000 == 0:
-				print "#", cpt
-		print "indexing %i lines" % cpt
-		keys.close()
-		datas.close()
 	def __len__(self):
 		return self.length
 	def getKey(self, poz):
@@ -83,7 +82,7 @@ class Index(object):
 				low = pif
 
 if __name__ == '__main__':
-	a = Index('ip_group_city.csv')
+	a = Index()
 	for b in range(1):
 		for ip in ['17.149.160.31', '213.41.120.195', '184.73.76.248', '88.191.52.43']:
 			print "%s is in block " % ip, 
