@@ -1,0 +1,13 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+__author__ = "Mathieu Lecarme <mathieu@garambrogne.net>"
+
+import sys
+
+from ip2something import Index
+
+if len(sys.argv) < 2:
+	print "ip2db ip_group_city.csv [path_to_db]"
+else:
+	Index(sys.argv[1]).parse(True)
