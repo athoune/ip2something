@@ -4,14 +4,27 @@ IP to something
 A simple python API to wrap [IPinfoDB data](http://ipinfodb.com/ip_database.php). It's just python, no mysql here.
 On a core 2 duo mac, one query take 0.15ms.
 
+Install it
+----------
+
+	cd python
+	python setup.py build
+	sudo python setup.py install
+
 Using it
 --------
 
-Download a CSV db from IPinfoDB. IP2Something use a lazy index, first time, it parses the csv file, other time, index is used.
+Download a CSV db from IPinfoDB.
+
+Build the index :
+
+	ip2db ip_group_city.csv
+
+Use it:
 
 	from ip2something import Index
-	a = Index('ip', ''ip_group_country.csv')
-	print a.search('207.97.227.239')
+	idx = Index()
+	print idx.search('207.97.227.239')
 
 
 How it works
