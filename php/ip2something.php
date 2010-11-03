@@ -10,5 +10,3 @@ class IP2Something {
 		$this->datas = fopen("$path/ip.data", 'r');
 	}
 }
-
-$ip = new IP2Something($_ENV['HOME'] . '/.ip2something');
