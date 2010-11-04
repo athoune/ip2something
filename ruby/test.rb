@@ -6,8 +6,11 @@ class Ip2SomethingTest < Test::Unit::TestCase
 	def setup
 		@idx = Ip2Something::Index.new
 	end
-	def testread
+	def test_read
 		assert_equal "RD",  @idx.data(0).split('|')[0]
+	end
+	def test_search
+		puts @idx.search '127.0.0.1'
 	end
 end
 
