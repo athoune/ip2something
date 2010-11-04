@@ -6,8 +6,8 @@ class Ip2SomethingTest < Test::Unit::TestCase
 	def setup
 		@idx = Ip2Something::Index.new
 	end
-	def testkey
-		puts @idx.key 12
+	def testread
+		assert_equal "RD",  @idx.data(0).split('|')[0]
 	end
 end
 
