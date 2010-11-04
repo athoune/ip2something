@@ -47,21 +47,3 @@ module Ip2Something
 		end
 	end
 end
-
-=begin
-k = socket.inet_aton(ip)
-cpt = 0
-high = self.length
-low = 0
-while True:
-	cpt += 1
-	pif = (high+low) / 2
-	#print pif
-	if self.getKey(pif) == k or (pif > 1 and self.getKey(pif-1) < k and self.getKey(pif) > k):
-		return self.toDict(self.getData(pif-1).split('|')) #socket.inet_ntoa(self.getKey(pif-1))
-	if self.getKey(pif) > k :
-		high = pif
-	else:
-		low = pif
-
-=end
