@@ -5,7 +5,17 @@ module Ip2Something
 			@keys = File.new("#{folder}/ip.keys", 'r')
 			@datas = File.new("#{folder}/ip.data", 'r')
 		end
+		def key poz
+			@keys.seek poz*10
+			@keys.read 4
+		end
+		def data poz
+		end
 	end
 end
 
-Ip2Something::Index.new
+=begin
+self.keys.seek(poz * 10)
+return self.keys.read(4)
+
+=end
