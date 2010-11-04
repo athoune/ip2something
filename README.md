@@ -43,6 +43,13 @@ The API is simple :
 	$idx = new IP2Something($_ENV['HOME'] . '/.ip2something');
 	var_dump($idx->search('82.227.122.98'));
 
+Ruby client
+-----------
+
+	require 'ip2something'
+	idx = Ip2Something::Index.new
+	puts idx.search('17.251.200.70')[:city]
+
 How it works
 ------------
 
