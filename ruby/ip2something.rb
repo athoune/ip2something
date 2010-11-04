@@ -25,7 +25,18 @@ module Ip2Something
 			while true:
 				pif = (high+low) / 2
 				if key(pif) == k or (pif > 1 and key(pif-1) < k and key(pif) > k)
-					return data(pif -1).split('|')
+					datas = data(pif -1).split('|')
+					return {
+						:country_code => datas[0],
+						:country_name => datas[1],
+						:region_code  => datas[2],
+						:region_name  => datas[3],
+						:city         => datas[4],
+						:zipcode      => datas[5],
+						:latitude     => datas[6],
+						:longitude    => datas[7],
+						:metrocode    => datas[8]
+					}
 				end
 				if key(pif) > k
 					high = pif

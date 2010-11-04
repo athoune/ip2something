@@ -10,7 +10,12 @@ class Ip2SomethingTest < Test::Unit::TestCase
 		assert_equal "RD",  @idx.data(0).split('|')[0]
 	end
 	def test_search
-		puts @idx.search '127.0.0.1'
+		assert_equal 'RD', @idx.search('127.0.0.1')[:country_code]
+	end
+	def test_city
+		assert_equal 'Vincennes', @idx.search('82.227.122.98')[:city]
+		assert_equal 'Cupertino', @idx.search('17.251.200.70')[:city]
+		
 	end
 end
 
