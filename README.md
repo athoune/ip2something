@@ -1,10 +1,13 @@
 IP to something
 ===============
 
-A simple python API to wrap [IPinfoDB data](http://ipinfodb.com/ip_database.php). It's just python, no mysql here.
-On a core 2 duo mac, one query take 0.15ms.
+A simple API to wrap [IPinfoDB data](http://ipinfodb.com/ip_database.php). There is no sql here.
+On a core 2 duo mac, one query take 0.15ms with the python client.
 
-Install it
+A command line tool parse the csv file and build an index. Different clients can query this index.
+For now, there is a Python and a PHP client. Soon, there will be a Ruby and an Erlang client.
+
+Installing it
 ----------
 
 	cd python
@@ -26,6 +29,19 @@ Use it:
 	idx = Index()
 	print idx.search('207.97.227.239')
 
+PHP client
+----------
+
+The php client is provided with a small unit test with [phpunit](http://www.phpunit.de/)
+
+	cd php
+	phpunit .
+
+The API is simple :
+
+	require 'class.ip2something.php';
+	$idx = new IP2Something($_ENV['HOME'] . '/.ip2something');
+	var_dump($idx->search('82.227.122.98'));
 
 How it works
 ------------
