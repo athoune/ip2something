@@ -52,7 +52,7 @@ class Index(object):
 		poz, size = struct.unpack('!LH', self.keys.read(6))
 		self.datas.seek(poz)
 		return self.datas.read(size)
-	def toDict(self, datas):
+	def _toDict(self, datas):
 		if len(datas) == 9:
 			return {
 				'country_code' : datas[0],
@@ -74,8 +74,9 @@ class Index(object):
 		while True:
 			cpt += 1
 			pif = (high+low) / 2
-			if self.getKey(pif) == k or (pif > 1 and self.getKey(pif-1) < k and self.getKey(pif) > k):
-				return self.toDict(self.getData(pif-1).split('|')) #socket.inet_ntoa(self.getKey(pif-1))
+			v = self.getKey(pif)
+			if v == k or (pif > 1 and self.getKey(pif-1) < k and v > k):
+				return self._toDict(self.getData(pif-1).split('|')) #socket.inet_ntoa(self.getKey(pif-1))
 			if self.getKey(pif) > k :
 				high = pif
 			else:
