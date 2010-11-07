@@ -11,6 +11,8 @@
 
 @interface Ip2something: NSObject {
     NSString *folder;
+    NSFileHandle *datas;
+    NSFileHandle *keys;
 }
 -(id) init;
 -(id) initWithPath:(NSString *) path;
