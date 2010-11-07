@@ -17,16 +17,30 @@
 -(id) initWithPath: (NSString *) path {
     folder = [path stringByExpandingTildeInPath];
     NSLog(@"ip db is here : %@", folder);
-    NSLog(@"%@", [NSString stringWithFormat: @"%@/ip.keys", folder]);
     datas = [NSFileHandle fileHandleForReadingAtPath: [NSString stringWithFormat: @"%@/ip.data", folder]];
     keys = [NSFileHandle fileHandleForReadingAtPath: [NSString stringWithFormat: @"%@/ip.keys", folder]];
     return self;
 }
 
--(NSData *) getKey:(unsigned long) poz {
-    [keys seekToFileOffset: poz * 10l];
+-(NSData *) getKey:(NSUInteger) n {
+    [keys seekToFileOffset: n * 10];
     return [keys readDataOfLength: 4];
 }
+
+-(NSString *) getData:(NSUInteger) n {
+    [keys seekToFileOffset: n * 10 + 4];
+    NSData * pozSize = [keys readDataOfLength:6];
+    NSLog(@"%@", pozSize);
+    unsigned int poz;
+    [pozSize getBytes:&poz length:4];
+    NSLog(@"poz : %u", poz);
+    short size;
+    [pozSize getBytes:&size range:NSMakeRange(4,2) ];
+    NSLog(@"size : %hu", size);
+    [datas seekToFileOffset:poz];
+    return [[NSString alloc] initWithData:[datas readDataOfLength:size] encoding:NSUTF8StringEncoding];
+}
+
 -(NSDictionary *) search:(NSString *) ip {
     return [NSDictionary new];
 }

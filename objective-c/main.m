@@ -4,7 +4,7 @@
 int main (int argc, const char * argv[]) {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     Ip2something *idx = [[Ip2something alloc] init];
-    NSLog(@"%@", [idx getKey: 2]);
+    NSLog(@"%@", [idx getData: 1]);
     [pool release];
     return 0;
 }
