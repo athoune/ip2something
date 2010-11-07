@@ -1,1 +1,3 @@
-ip2something.xcodeproj/mlecarme.*
+ip2something.xcodeproj/*.mode1v3
+ip2something.xcodeproj/*.pbxuser
+build
