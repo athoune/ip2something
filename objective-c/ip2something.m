@@ -25,6 +25,7 @@
     NSFileManager *man = [[NSFileManager alloc] init];
     NSDictionary *attrs = [man attributesOfItemAtPath: k error: NULL];
     length = [attrs fileSize] / 10;
+    //NSLog(@"length : %@", [NSNumber numberWithInt:length]);
     return self;
 }
 
@@ -51,23 +52,24 @@
     NSArray * blocs = [ip componentsSeparatedByString:@"."];
     NSNumberFormatter * f = [[NSNumberFormatter alloc] init];
     [f setNumberStyle:NSNumberFormatterDecimalStyle];
-    int k = 0;
+    NSUInteger k = 0;
     for(int a=0 ;a < [blocs count]; a++) {
 	k += [[f numberFromString: [blocs objectAtIndex:a]] intValue] << (8*(3-a));
     }
     [f release];
     k = CFSwapInt32BigToHost(k);
     //NSLog(@"%@", k);
-    NSInteger high = length;
-    NSInteger low = 0;
-    NSInteger pif;
-    NSInteger v;
+    NSUInteger high = length;
+    NSUInteger low = 0;
+    NSUInteger pif;
+    NSUInteger v;
     while(true) {
 	pif = (high + low)/2;
 	NSLog(@"pif : %@", [NSNumber numberWithInt:pif]);
 	v = [self keyAtIndex:pif];
 	//NSLog(@"%@", v);
 	if( v == k || (pif > 1 && [self keyAtIndex:(pif-1)] < k && v > k)) {
+	    NSLog(@"pif : %@", [NSNumber numberWithInt:pif]);
 	    NSLog(@"data %@", [self dataAtIndex:(pif-1)]);
 	    return [NSDictionary new];
 	}
