@@ -28,20 +28,15 @@
     return self;
 }
 
--(NSData *) getKey:(NSUInteger) n {
+-(NSUInteger) keyAtIndex:(NSUInteger) n {
     [keys seekToFileOffset: n * 10];
-    return [keys readDataOfLength: 4];
-}
-
--(NSUInteger) getKeyAsInt:(NSUInteger) n {
     int poz;
-    NSData * d = [self getKey:n];
-    [d getBytes:&poz length:4];
+    [[keys readDataOfLength: 4] getBytes:&poz length:4];
     poz = CFSwapInt32BigToHost(poz);
     return poz;
 }
 
--(NSString *) getData:(NSUInteger) n {
+-(NSString *) dataAtIndex:(NSUInteger) n {
     [keys seekToFileOffset: n * 10 + 4];
     NSData * pozSize = [keys readDataOfLength:6];
     int poz;
@@ -56,34 +51,32 @@
     NSArray * blocs = [ip componentsSeparatedByString:@"."];
     NSNumberFormatter * f = [[NSNumberFormatter alloc] init];
     [f setNumberStyle:NSNumberFormatterDecimalStyle];
-    int ik = 0;
+    int k = 0;
     for(int a=0 ;a < [blocs count]; a++) {
-	ik += [[f numberFromString: [blocs objectAtIndex:a]] intValue] << (8*(3-a));
+	k += [[f numberFromString: [blocs objectAtIndex:a]] intValue] << (8*(3-a));
     }
     [f release];
-    NSLog(@"%@", [NSNumber numberWithInt: ik ]);
-    ik = CFSwapInt32BigToHost(ik);
-    NSData * k = [NSData dataWithBytes: &ik length:4];
-    NSLog(@"%@", k);
+    k = CFSwapInt32BigToHost(k);
+    //NSLog(@"%@", k);
     NSInteger high = length;
     NSInteger low = 0;
     NSInteger pif;
-    NSData * v;
-    return [NSDictionary new];
-    /*while(true) {
+    NSInteger v;
+    while(true) {
 	pif = (high + low)/2;
-	v = [self getKey:pif];
+	NSLog(@"pif : %@", [NSNumber numberWithInt:pif]);
+	v = [self keyAtIndex:pif];
 	//NSLog(@"%@", v);
-	if( v == k || (pif > 1 && [self getKey:(pif-1)] < k && v > k)) {
-	    NSLog(@"%@", [self getData:(pif -1)]);
+	if( v == k || (pif > 1 && [self keyAtIndex:(pif-1)] < k && v > k)) {
+	    NSLog(@"data %@", [self dataAtIndex:(pif-1)]);
 	    return [NSDictionary new];
 	}
-	   if([self getKey:pif] > k) {
-	       high = pif;
-	   } else {
-	       low = pif;
-	   }
-    }*/
+	if([self keyAtIndex:pif] > k) {
+	    high = pif;
+	} else {
+	    low = pif;
+	}
+    }
     /*struct sockaddr_in k;
     inet_aton([ip cStringUsingEncoding:NSUTF8StringEncoding], &k.sin_addr);
     NSLog(@"%@", [NSNumber numberWithInt: k.sin_addr ]);*/
