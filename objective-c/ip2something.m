@@ -44,12 +44,15 @@
     NSArray * blocs = [ip componentsSeparatedByString:@"."];
     NSNumberFormatter * f = [[NSNumberFormatter alloc] init];
     [f setNumberStyle:NSNumberFormatterDecimalStyle];
-    int k = 0;
+    int ik = 0;
     for(int a=0 ;a < [blocs count]; a++) {
-	k += [[f numberFromString: [blocs objectAtIndex:a]] intValue] << (8*(3-a));
+	ik += [[f numberFromString: [blocs objectAtIndex:a]] intValue] << (8*(3-a));
     }
-    NSLog(@"%@", [NSNumber numberWithInt: k ]);
     [f release];
+    NSLog(@"%@", [NSNumber numberWithInt: ik ]);
+    ik = CFSwapInt32HostToBig(ik);
+    NSData * k = [NSData dataWithBytes: &ik length:4];
+    NSLog(@"%@", k);
     /*struct sockaddr_in k;
     inet_aton([ip cStringUsingEncoding:NSUTF8StringEncoding], &k.sin_addr);
     NSLog(@"%@", [NSNumber numberWithInt: k.sin_addr ]);*/
