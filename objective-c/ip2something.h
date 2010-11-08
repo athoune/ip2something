@@ -13,6 +13,7 @@
     NSString *folder;
     NSFileHandle *datas;
     NSFileHandle *keys;
+    UInt32 length;
 }
 -(id) init;
 -(id) initWithPath:(NSString *) path;

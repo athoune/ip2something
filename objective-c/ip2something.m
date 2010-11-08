@@ -33,6 +33,14 @@
     return [keys readDataOfLength: 4];
 }
 
+-(NSUInteger) getKeyAsInt:(NSUInteger) n {
+    int poz;
+    NSData * d = [self getKey:n];
+    [d getBytes:&poz length:4];
+    poz = CFSwapInt32BigToHost(poz);
+    return poz;
+}
+
 -(NSString *) getData:(NSUInteger) n {
     [keys seekToFileOffset: n * 10 + 4];
     NSData * pozSize = [keys readDataOfLength:6];
@@ -61,7 +69,8 @@
     NSInteger low = 0;
     NSInteger pif;
     NSData * v;
-    while(true) {
+    return [NSDictionary new];
+    /*while(true) {
 	pif = (high + low)/2;
 	v = [self getKey:pif];
 	//NSLog(@"%@", v);
@@ -74,7 +83,7 @@
 	   } else {
 	       low = pif;
 	   }
-    }
+    }*/
     /*struct sockaddr_in k;
     inet_aton([ip cStringUsingEncoding:NSUTF8StringEncoding], &k.sin_addr);
     NSLog(@"%@", [NSNumber numberWithInt: k.sin_addr ]);*/
