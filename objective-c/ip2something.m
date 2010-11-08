@@ -7,7 +7,9 @@
 //
 
 #import "ip2something.h"
-
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 
 @implementation Ip2something
 -(id) init {
@@ -39,6 +41,18 @@
 }
 
 -(NSDictionary *) search:(NSString *) ip {
+    NSArray * blocs = [ip componentsSeparatedByString:@"."];
+    NSNumberFormatter * f = [[NSNumberFormatter alloc] init];
+    [f setNumberStyle:NSNumberFormatterDecimalStyle];
+    int k = 0;
+    for(int a=0 ;a < [blocs count]; a++) {
+	k += [[f numberFromString: [blocs objectAtIndex:a]] intValue] << (8*(3-a));
+    }
+    NSLog(@"%@", [NSNumber numberWithInt: k ]);
+    [f release];
+    /*struct sockaddr_in k;
+    inet_aton([ip cStringUsingEncoding:NSUTF8StringEncoding], &k.sin_addr);
+    NSLog(@"%@", [NSNumber numberWithInt: k.sin_addr ]);*/
     return [NSDictionary new];
 }
 @end
