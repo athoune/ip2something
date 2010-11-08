@@ -30,15 +30,12 @@
 -(NSString *) getData:(NSUInteger) n {
     [keys seekToFileOffset: n * 10 + 4];
     NSData * pozSize = [keys readDataOfLength:6];
-    NSLog(@"%@", pozSize);
-    unsigned int poz;
+    int poz;
     [pozSize getBytes:&poz length:4];
-    NSLog(@"poz : %u", poz);
     short size;
-    [pozSize getBytes:&size range:NSMakeRange(4,2) ];
-    NSLog(@"size : %hu", size);
-    [datas seekToFileOffset:poz];
-    return [[NSString alloc] initWithData:[datas readDataOfLength:size] encoding:NSUTF8StringEncoding];
+    [pozSize getBytes:&size range:NSMakeRange(4,2)];
+    [datas seekToFileOffset:CFSwapInt32BigToHost(poz)];
+    return [[NSString alloc] initWithData:[datas readDataOfLength:CFSwapInt16BigToHost(size)] encoding:NSUTF8StringEncoding];
 }
 
 -(NSDictionary *) search:(NSString *) ip {
