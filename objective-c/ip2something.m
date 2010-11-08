@@ -7,9 +7,9 @@
 //
 
 #import "ip2something.h"
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
+//#include <sys/socket.h>
+//#include <netinet/in.h>
+//#include <arpa/inet.h>
 
 @implementation Ip2something
 -(id) init {
@@ -20,7 +20,11 @@
     folder = [path stringByExpandingTildeInPath];
     NSLog(@"ip db is here : %@", folder);
     datas = [NSFileHandle fileHandleForReadingAtPath: [NSString stringWithFormat: @"%@/ip.data", folder]];
-    keys = [NSFileHandle fileHandleForReadingAtPath: [NSString stringWithFormat: @"%@/ip.keys", folder]];
+    NSString * k = [NSString stringWithFormat: @"%@/ip.keys", folder];
+    keys = [NSFileHandle fileHandleForReadingAtPath: k];
+    NSFileManager *man = [[NSFileManager alloc] init];
+    NSDictionary *attrs = [man attributesOfItemAtPath: k error: NULL];
+    length = [attrs fileSize] / 10;
     return self;
 }
 
@@ -50,12 +54,29 @@
     }
     [f release];
     NSLog(@"%@", [NSNumber numberWithInt: ik ]);
-    ik = CFSwapInt32HostToBig(ik);
+    ik = CFSwapInt32BigToHost(ik);
     NSData * k = [NSData dataWithBytes: &ik length:4];
     NSLog(@"%@", k);
+    NSInteger high = length;
+    NSInteger low = 0;
+    NSInteger pif;
+    NSData * v;
+    while(true) {
+	pif = (high + low)/2;
+	v = [self getKey:pif];
+	//NSLog(@"%@", v);
+	if( v == k || (pif > 1 && [self getKey:(pif-1)] < k && v > k)) {
+	    NSLog(@"%@", [self getData:(pif -1)]);
+	    return [NSDictionary new];
+	}
+	   if([self getKey:pif] > k) {
+	       high = pif;
+	   } else {
+	       low = pif;
+	   }
+    }
     /*struct sockaddr_in k;
     inet_aton([ip cStringUsingEncoding:NSUTF8StringEncoding], &k.sin_addr);
     NSLog(@"%@", [NSNumber numberWithInt: k.sin_addr ]);*/
-    return [NSDictionary new];
 }
 @end
