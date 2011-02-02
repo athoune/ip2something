@@ -47,23 +47,6 @@ Index.prototype.data = function(poz, cb) {
 	});
 };
 
-/*
-def search(self, ip):
-	k = socket.inet_aton(ip)
-	cpt = 0
-	high = self.length
-	low = 0
-	while True:
-		cpt += 1
-		pif = (high+low) / 2
-		v = self.getKey(pif)
-		if v == k or (pif > 1 and self.getKey(pif-1) < k and v > k):
-			return self._toDict(self.getData(pif-1).split('|')) #socket.inet_ntoa(self.getKey(pif-1))
-		if self.getKey(pif) > k :
-			high = pif
-		else:
-			low = pif
-*/
 Index.prototype.search = function(ip, cb) {
 	var k = inetToInt(ip);
 	var cpt = 0;
