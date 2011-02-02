@@ -10,7 +10,7 @@ var util = require('util'),
     endian 32-bit unsigned integer.
 */
 Buffer.prototype.asUInt32BE = function() {
-	return (this[0] << 24) + (this[1] << 16) + (this[2] << 8) + this[3];
+	return (this[0] * Math.pow(2, 24)) + (this[1] << 16) + (this[2] << 8) + this[3];
 };
 
 Buffer.prototype.asShortBE = function() {
@@ -78,6 +78,7 @@ Index.prototype.search = function(ip, cb) {
 				return true;
 			} 
 			idx.key(pif - 1, function(vbefore) {
+				//console.log(vbefore, k, v);
 				if((vbefore < k) && (v > k)) {
 					idx.data(pif-1, cb);
 					return true;
@@ -98,7 +99,7 @@ var inetToInt = function(ip) {
 	var total = 0;
 	var cpt = 3;
 	ip.split('.').forEach(function(block) {
-		total += parseInt(block, 10) << (8 * cpt--);
+			total += parseInt(block, 10) * Math.pow(2, 8 * cpt--);
 	});
 	return total;
 };
@@ -113,7 +114,7 @@ var i = new Index();
 
 //console.log(inetToInt('17.149.160.31'));
 //, '213.41.120.195', '184.73.76.248', 
-['17.149.160.31'].forEach(function(ip) {
+['17.149.160.31', '213.41.120.195', '184.73.76.248', '88.191.52.43'].forEach(function(ip) {
 	i.search(ip, function(data){
 		console.log(data);
 	});	
