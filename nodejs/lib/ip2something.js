@@ -5,12 +5,14 @@ encoding stolen from https://github.com/danielgtaylor/qtfaststart.js/blob/master
 var util = require('util'),
 	fs = require('fs');
 
+var TWOPOWER24 = Math.pow(2, 24);
+
 /*
     Make a string method for converting a four character string into a big
     endian 32-bit unsigned integer.
 */
 Buffer.prototype.asUInt32BE = function() {
-	return (this[0] * Math.pow(2, 24)) + (this[1] << 16) + (this[2] << 8) + this[3];
+	return (this[0] * TWOPOWER24) + (this[1] << 16) + (this[2] << 8) + this[3];
 };
 
 Buffer.prototype.asShortBE = function() {
@@ -88,21 +90,3 @@ var inetToInt = function(ip) {
 	});
 	return total;
 };
-
-//lazy test
-
-var i = new Index();
-
-/*i.data(152, function(data) {
-	console.log(data);
-});*/
-
-//console.log(inetToInt('17.149.160.31'));
-//, '213.41.120.195', '184.73.76.248', 
-/*
-['17.149.160.31', '213.41.120.195', '184.73.76.248', '88.191.52.43'].forEach(function(ip) {
-	i.search(ip, function(data){
-		console.log(data);
-	});	
-});
-*/
