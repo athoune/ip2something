@@ -2,7 +2,7 @@ IP to something
 ===============
 
 A simple API to wrap [IPinfoDB data](http://ipinfodb.com/ip_database.php). There is no sql here.
-On a core 2 duo mac, one query take 0.15ms with the python client.
+On a core i5 mac, one query take 450µs (2250 query per second) with the python client.
 
 A command line tool parse the csv file and build an index. Different clients can query this index.
 For now, there is a Python and a PHP client. Soon, there will be a Ruby and an Erlang client.
