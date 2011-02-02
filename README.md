@@ -5,7 +5,7 @@ A simple API to wrap [IPinfoDB data](http://ipinfodb.com/ip_database.php). There
 On a core i5 mac, one query take 450µs (2250 query per second) with the python client.
 
 A command line tool parse the csv file and build an index. Different clients can query this index.
-For now, there is a Python and a PHP client. Soon, there will be a Ruby and an Erlang client.
+For now, there is a Python, PHP, Ruby and Nodejs client. Soon, there will be a Ruby and an Erlang client.
 
 Installing it
 ----------
@@ -49,6 +49,18 @@ Ruby client
 	require 'ip2something'
 	idx = Ip2Something::Index.new
 	puts idx.search('17.251.200.70')[:city]
+
+
+Nodejs client
+-------------
+
+Nodejs API is async.
+
+	var Index = require('ip2something').Index;
+	var idx = new Index();
+	idx.search('17.251.200.70', function(loc) {
+		process.stdout.write(loc);
+	});
 
 How it works
 ------------
