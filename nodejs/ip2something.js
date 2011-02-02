@@ -21,6 +21,7 @@ var Index = function(folder) {
 	var f = fs.realpathSync(folder || process.env['HOME'] + '/.ip2something');
 	this.keys = fs.openSync(f+"/ip.keys", 'r');
 	this.datas = fs.openSync(f+"/ip.data", 'r');
+	this.size = fs.statSync(f+"/ip.keys").size / 10;
 };
 
 Index.prototype.key = function(poz, cb) {
@@ -46,11 +47,58 @@ Index.prototype.data = function(poz, cb) {
 	});
 };
 
+/*
+def search(self, ip):
+	k = socket.inet_aton(ip)
+	cpt = 0
+	high = self.length
+	low = 0
+	while True:
+		cpt += 1
+		pif = (high+low) / 2
+		v = self.getKey(pif)
+		if v == k or (pif > 1 and self.getKey(pif-1) < k and v > k):
+			return self._toDict(self.getData(pif-1).split('|')) #socket.inet_ntoa(self.getKey(pif-1))
+		if self.getKey(pif) > k :
+			high = pif
+		else:
+			low = pif
+*/
+Index.prototype.search = function(ip, cb) {
+	var k = inetToInt(ip);
+	var cpt = 0;
+	var high = this.size;
+	var low = 0;
+	var idx = this;
+	var reduce = function() {
+		var pif = Math.round((high+low) / 2);
+		idx.key(pif, function(v) {
+			if( v == k ) {
+				idx.data(pif-1, cb);
+				return true;
+			} 
+			idx.key(pif - 1, function(vbefore) {
+				if((vbefore < k) && (v > k)) {
+					idx.data(pif-1, cb);
+					return true;
+				}
+				if( v > k) {
+					high = pif;
+				} else {
+					low = pif;
+				}
+				if(pif > 1) reduce();
+			});
+		});
+	};
+	reduce();
+};
+
 var inetToInt = function(ip) {
 	var total = 0;
 	var cpt = 3;
 	ip.split('.').forEach(function(block) {
-		total += parseInt(block, 10) << Math.pow(2, cpt--);
+		total += parseInt(block, 10) << (8 * cpt--);
 	});
 	return total;
 };
@@ -59,8 +107,14 @@ var inetToInt = function(ip) {
 
 var i = new Index();
 
-i.data(43, function(data) {
+/*i.data(152, function(data) {
 	console.log(data);
-});
+});*/
 
-console.log(inetToInt('17.149.160.31'));
+//console.log(inetToInt('17.149.160.31'));
+//, '213.41.120.195', '184.73.76.248', 
+['17.149.160.31'].forEach(function(ip) {
+	i.search(ip, function(data){
+		console.log(data);
+	});	
+});
