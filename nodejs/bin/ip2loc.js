@@ -15,7 +15,6 @@ stdin.on('data', function (chunk) {
 	var lines = tmp.split("\n");
 	if(lines.length > 1) {
 		tmp = lines.pop();
-		//console.log(lines);
 		lines.forEach(function(line) {
 			//console.log(line);
 			idx.search(line, function(data){
