@@ -24,6 +24,8 @@ var Index = function(folder) {
 	this.size = fs.statSync(f+"/ip.keys").size / 10;
 };
 
+exports.Index = Index;
+
 Index.prototype.key = function(poz, cb) {
 	var buffer = new Buffer(4);
 	var idx = this;
@@ -97,8 +99,10 @@ var i = new Index();
 
 //console.log(inetToInt('17.149.160.31'));
 //, '213.41.120.195', '184.73.76.248', 
+/*
 ['17.149.160.31', '213.41.120.195', '184.73.76.248', '88.191.52.43'].forEach(function(ip) {
 	i.search(ip, function(data){
 		console.log(data);
 	});	
 });
+*/
