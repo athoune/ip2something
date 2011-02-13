@@ -1,0 +1,17 @@
+{
+	"name"        : "ip2something",
+	"version"     : "0.0.1",
+	"main"        : "./lib/ip2something",
+	"description" : "ip to location for node.js",
+	"author"      : "Mathieu Lecarme <mathieu@garambrogne.net>",
+	"keywords"    : ["geo", "ip"],
+	"repositories": [{
+		"type": "git",
+		"path": "git://github.com/athoune/ip2something.git"
+		}],
+	"homepage"    : "http://github.com/athoune/ip2something",
+	"bugs"        : "http://github.com/athoune/ip2something/issues",
+	"licenses"    : [{ "type": "GPLv3"}],
+	"engine"      : "node",
+	"bin"         : { "ip2loc" : "./bin/ip2loc.js" }
+}
