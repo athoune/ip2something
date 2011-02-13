@@ -1,0 +1,17 @@
+{application, ip2something,
+ [
+  {description, "Ip to geo localization"},
+  {vsn, "0.1"},
+  {registered, []},
+  {modules, [
+    ip2something_app,
+    ip2something_sup,
+    ip2something
+  ]},
+  {applications, [
+    kernel,
+    stdlib
+  ]},
+  {mod, { ip2something_app, []}},
+  {env, []}
+ ]}.
