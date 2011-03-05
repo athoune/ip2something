@@ -1,0 +1,81 @@
+-module(ip2s_index).
+-author("Mathieu Lecarme <mathieu@garambrogne.net>").
+
+-behaviour(gen_server).
+
+%% gen_server callbacks
+-export([init/1, handle_call/3, handle_cast/2, 
+         handle_info/2, terminate/2, code_change/3]).
+
+
+-record(state, {index, length}).
+-export([start_link/0, nth/1, length/0]).
+
+-ifdef(TEST).
+-include_lib("eunit/include/eunit.hrl").
+-endif.
+
+init([]) ->
+    {ok, Index} = file:read_file("./index.db"),
+    %put(index, Index),
+    {ok, #state{index=Index, length=round(size(Index) / 4)}}.
+
+start_link() ->
+    gen_server:start_link({local, ?MODULE}, ?MODULE, [], []).
+
+%%--------------------------------------------------------------------
+%% Func: code_change(OldVsn, State, Extra) -> {ok, NewState}
+%% Description: Convert process state when code is changed
+%%--------------------------------------------------------------------
+code_change(_OldVsn, State, _Extra) ->
+    {ok, State}.
+
+%%--------------------------------------------------------------------
+%% Function: %% handle_call(Request, From, State) -> {reply, Reply, State} |
+%%                                      {reply, Reply, State, Timeout} |
+%%                                      {noreply, State} |
+%%                                      {noreply, State, Timeout} |
+%%                                      {stop, Reason, Reply, State} |
+%%                                      {stop, Reason, State}
+%% Description: Handling call messages
+%%--------------------------------------------------------------------
+handle_call({get, Position}, _From, #state{length=Length, index=Index} = State) ->
+    case Position >= Length of
+        true ->
+            {reply, {error, out_of_bound}, State};
+        false ->
+            Ip = binary:part(Index, {Position*4, 4}),
+            {reply, {ok, Ip}, State}
+    end;
+
+handle_call({length}, _From, #state{length=Length} = State) ->
+    {reply, Length, State};
+
+handle_call(Msg, From, State) ->
+    io:format("~p~n~p~n", [Msg, From]),
+    {reply, ok, State}.
+
+handle_cast(Msg, State) ->
+    io:format("~p~n", [Msg]),
+    {noreply, State}.
+
+handle_info(Msg, State) ->
+    io:format("~p~n", [Msg]),
+    {noreply, State}.
+
+terminate(_Reason, _State) ->
+    ok.
+
+nth(Position) ->
+    gen_server:call(?MODULE, {get, Position}).
+    
+length() ->
+    gen_server:call(?MODULE, {length}).
+
+-ifdef(EUNIT).
+    % get_test() ->
+    %     start_link(),
+    %     {ok, _} = nth(42),
+    %     {ok, _} = nth(length()-1),
+    %     {error, _} = nth(length()).
+-endif.

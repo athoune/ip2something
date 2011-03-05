@@ -6,7 +6,8 @@
   {modules, [
     ip2something_app,
     ip2something_sup,
-    ip2something
+    ip2something,
+    ip2s_index
   ]},
   {applications, [
     kernel,
