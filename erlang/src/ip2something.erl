@@ -13,26 +13,34 @@
 
 read_csv(Path) ->
     {ok, F} = file:open(Path, [read, {encoding,latin1}]),
-    file:read_line(F), %%I don't care about the first line
-    read_line(F),
-    ok.
+    io:get_line(F, ""), %%I don't care about the first line
+    {ok, Index} = file:open("./index.db", [write]),
+    read_line(F, Index).
 
-read_line(Fd) ->
-    case file:read_line(Fd) of 
-    {ok, Data} ->
+read_line(Fd, Index) ->
+    case io:get_line(Fd, "") of 
+    eof -> 
+        file:close(Index),
+        ok;
+    %{error, Reason} ->
+    %    io:format("Erreur: ~w", [Reason]),
+    %    {stop, Reason};
+    Data ->
+        %io:format("~p ~n ~p ~n", [Data, string:tokens(string:substr(Data, 1, string:len(Data) -2), ";")]),
         [Ip|Tokens] = lists:map(fun(Dirty) ->
-            case Dirty of
-                "" -> "";
-                "\n" -> "";
-                _ -> string:substr(Dirty, 2, string:len(Dirty) -2)
-            end
-        end, string:tokens(string:substr(Data, 1, string:len(Data) -2), ";")),
+                %io:format("~p~n", [Dirty]),
+                case Dirty of
+                    "" -> "";
+                    "\n" -> "";
+                    _ -> string:substr(Dirty, 2, string:len(Dirty) -2)
+                end
+            end,
+            string:tokens(string:substr(Data, 1, string:len(Data) -2), ";")),
         {Ipv, _} = string:to_integer(Ip),
-        io:format("line ~B : ~p\n", [Ipv, Tokens]),
-        read_line(Fd);
-    eof -> ok;
-    {error, Reason} -> {stop, Reason}
-end.
+        file:write(Index, <<Ipv:32/unsigned-integer>>),
+        %io:format("line ~B : ~p\n", [Ipv, Tokens]),
+        read_line(Fd, Index)
+    end.
 
 str_ip_to_int(Ip) ->
     ip_to_int(lists:map(
