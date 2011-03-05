@@ -7,7 +7,8 @@
 
 -export([
     read_csv/1,
-    ip_to_int/1
+    ip_to_int/1,
+    str_ip_to_int/1
 ]).
 
 read_csv(Path) ->
@@ -33,16 +34,19 @@ read_line(Fd) ->
     {error, Reason} -> {stop, Reason}
 end.
 
-ip_to_int(Ip) ->
-    Tokens = lists:map(
+str_ip_to_int(Ip) ->
+    ip_to_int(lists:map(
         fun(S) -> 
             {I, _} = string:to_integer(S),
             I
         end,
         string:tokens(Ip, ".")
-    ).
+    )).
+ip_to_int(Ip) ->
+    <<I:32/unsigned-integer>> = erlang:list_to_binary(Ip),
+    I.
 
 -ifdef(EUNIT).
 ip_test() ->
-    ip_to_int("127.0.0.1").
+    ?assertEqual(2130706433, str_ip_to_int("127.0.0.1")).
 -endif.
