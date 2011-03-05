@@ -1,7 +1,13 @@
 -module(ip2something).
+-author("Mathieu Lecarme <mathieu@garambrogne.net>").
+
+-ifdef(TEST).
+-include_lib("eunit/include/eunit.hrl").
+-endif.
 
 -export([
-    read_csv/1
+    read_csv/1,
+    ip_to_int/1
 ]).
 
 read_csv(Path) ->
@@ -26,4 +32,17 @@ read_line(Fd) ->
     eof -> ok;
     {error, Reason} -> {stop, Reason}
 end.
-    
+
+ip_to_int(Ip) ->
+    Tokens = lists:map(
+        fun(S) -> 
+            {I, _} = string:to_integer(S),
+            I
+        end,
+        string:tokens(Ip, ".")
+    ).
+
+-ifdef(EUNIT).
+ip_test() ->
+    ip_to_int("127.0.0.1").
+-endif.
