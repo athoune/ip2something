@@ -7,9 +7,10 @@
 -export([init/1, handle_call/3, handle_cast/2, 
          handle_info/2, terminate/2, code_change/3]).
 
+-include("ip2something.hrl").
 
--record(state, {index, length}).
--export([start_link/0, nth/1, length/0]).
+-record(state, {index, length, datas}).
+-export([start_link/0, nth/1, length/0, search/1]).
 
 -ifdef(TEST).
 -include_lib("eunit/include/eunit.hrl").
@@ -18,7 +19,11 @@
 init([]) ->
     {ok, Index} = file:read_file("./index.db"),
     %put(index, Index),
-    {ok, #state{index=Index, length=round(size(Index) / 4)}}.
+    {ok, Datas} = dets:open_file(?IP2S_DATA, [
+        {file,"./data.db"},
+        {access, read}
+        ]),
+    {ok, #state{index=Index, length=round(size(Index) / 4), datas=Datas}}.
 
 start_link() ->
     gen_server:start_link({local, ?MODULE}, ?MODULE, [], []).
@@ -66,11 +71,43 @@ handle_info(Msg, State) ->
 terminate(_Reason, _State) ->
     ok.
 
+%%--------------------------------------------------------------------
+%% API
+%%--------------------------------------------------------------------
+
+
+%% get the nth index
 nth(Position) ->
     gen_server:call(?MODULE, {get, Position}).
-    
+
+%% size of the index
 length() ->
     gen_server:call(?MODULE, {length}).
+
+search(Ip) ->
+    Key = ip2s_convert:ip_to_bin(Ip),
+%    case dets:lookup(?IP2S_DATA, Key) of
+%        [Data] -> {ok, Data};
+%        [] -> 
+            dicho(Key, 0, length()).
+%    end.
+
+dicho(Key, Low, High) ->
+    Pif = round((High+Low)/2),
+    {ok, V } = nth(Pif),
+    {ok, Vb} = nth(Pif-1),
+    io:format("~p ~p ~p ~p ~p ~p~n", [V > Key, Key, V, Low, High, Pif]),
+    if 
+        (V == Key) or ((Pif > 1) and (Vb < Key) and (V > Key)) ->
+            {ok, dets:lookup(?IP2S_DATA, Vb)};
+        High == Low ->
+            {error, bad_loop};
+        true ->
+            if
+                V > Key -> dicho(Key, Low, Pif);
+                true -> dicho(Key, Pif, High)
+            end
+    end.
 
 -ifdef(EUNIT).
     % get_test() ->
