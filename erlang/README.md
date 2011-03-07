@@ -7,7 +7,7 @@ Build it
 	./rebar compile eunit
 	sudo ./rebar install
 
-You can use it inplace, with _erl -pa ebin/_, if you don't wont to install.
+You can use it inplace, with _erl -pa ebin/_, if you don't want to install.
 
 Index it
 --------
