@@ -113,10 +113,17 @@ dicho(Key, Low, High) ->
 float_or_none(St) when St == "" -> St;
 float_or_none(St) -> 
     {F, _} = string:to_float(St),
-    F.
+    case F of
+        error -> [];
+        _ -> F
+    end.
 
 format_data(Data) ->
     io:format("~p~n", [Data]),
+    case length(Data) of
+        9 -> Metrocode = lists:nth(9, Data);
+        _ -> Metrocode = ""
+    end,
     #ip2s_city{
         country_code = lists:nth(1, Data),
         country_name = lists:nth(2, Data),
@@ -126,7 +133,7 @@ format_data(Data) ->
         zipcode      = lists:nth(6, Data),
         latitude     = float_or_none(lists:nth(7, Data)),
         longitude    = float_or_none(lists:nth(8, Data)),
-        metrocode    = lists:nth(9, Data)
+        metrocode    = Metrocode
     }.
 
 -ifdef(EUNIT).
