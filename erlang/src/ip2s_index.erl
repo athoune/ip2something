@@ -96,10 +96,11 @@ dicho(Key, Low, High) ->
     Pif = round((High+Low)/2),
     {ok, V } = nth(Pif),
     {ok, Vb} = nth(Pif-1),
-    io:format("~p ~p ~p ~p ~p ~p~n", [V > Key, Key, V, Low, High, Pif]),
+    %io:format("~p ~p ~p ~p ~p ~p~n", [V > Key, Key, V, Low, High, Pif]),
     if 
         (V == Key) or ((Pif > 1) and (Vb < Key) and (V > Key)) ->
-            {ok, dets:lookup(?IP2S_DATA, Vb)};
+            [{_Key, Ip2s_data}] = dets:lookup(?IP2S_DATA, Vb),
+            {ok, format_data(Ip2s_data)};
         High == Low ->
             {error, bad_loop};
         true ->
@@ -108,6 +109,25 @@ dicho(Key, Low, High) ->
                 true -> dicho(Key, Pif, High)
             end
     end.
+
+float_or_none(St) when St == "" -> St;
+float_or_none(St) -> 
+    {F, _} = string:to_float(St),
+    F.
+
+format_data(Data) ->
+    io:format("~p~n", [Data]),
+    #ip2s_city{
+        country_code = lists:nth(1, Data),
+        country_name = lists:nth(2, Data),
+        region_code  = lists:nth(3, Data),
+        region_name  = lists:nth(4, Data),
+        city         = lists:nth(5, Data),
+        zipcode      = lists:nth(6, Data),
+        latitude     = float_or_none(lists:nth(7, Data)),
+        longitude    = float_or_none(lists:nth(8, Data)),
+        metrocode    = lists:nth(9, Data)
+    }.
 
 -ifdef(EUNIT).
     % get_test() ->
