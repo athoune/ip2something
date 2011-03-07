@@ -18,7 +18,6 @@
 
 init([]) ->
     {ok, Index} = file:read_file("./index.db"),
-    %put(index, Index),
     {ok, Datas} = dets:open_file(?IP2S_DATA, [
         {file,"./data.db"},
         {access, read}
@@ -119,7 +118,6 @@ float_or_none(St) ->
     end.
 
 format_data(Data) ->
-    io:format("~p~n", [Data]),
     case length(Data) of
         9 -> Metrocode = lists:nth(9, Data);
         _ -> Metrocode = ""
